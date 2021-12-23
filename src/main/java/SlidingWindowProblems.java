@@ -74,7 +74,7 @@ public class SlidingWindowProblems {
     return count;
   }
 
-//  560. Subarray Sum Equals K
+  //  560. Subarray Sum Equals K
   public int subarraySum(int[] nums, int k) {
     // idea is to use Prefix sum because we have negative elements present
     // straightforward sliding window won't work here
@@ -86,9 +86,9 @@ public class SlidingWindowProblems {
     int end = 0, count = 0;
     int runningSum = 0;
     prefixSumToFreq.put(0, 1);
-    while(end < nums.length) {
+    while (end < nums.length) {
       runningSum += nums[end];
-      if(prefixSumToFreq.containsKey(runningSum - k)) {
+      if (prefixSumToFreq.containsKey(runningSum - k)) {
         count += prefixSumToFreq.get(runningSum - k);
       }
       prefixSumToFreq.put(runningSum, 1 + prefixSumToFreq.getOrDefault(runningSum, 0));
@@ -104,18 +104,95 @@ public class SlidingWindowProblems {
     Map<Integer, Integer> remainderToFreq = new HashMap<>();
     remainderToFreq.put(0, 1);
     int runningSum = 0, end = 0, count = 0;
-    while(end < nums.length) {
+    while (end < nums.length) {
       runningSum += nums[end];
       int remainder = runningSum % k;
-      if(remainder < 0) { // important to handle the negative mod.
+      if (remainder < 0) { // important to handle the negative mod.
         remainder += k;
       }
-      if(remainderToFreq.containsKey(remainder)) {
+      if (remainderToFreq.containsKey(remainder)) {
         count += remainderToFreq.get(remainder);
       }
       remainderToFreq.put(remainder, 1 + remainderToFreq.getOrDefault(remainder, 0));
       end++;
     }
     return count;
+  }
+
+  //  438. Find All Anagrams in a String
+  public List<Integer> findAnagrams(String s, String p) {
+    List<Integer> startIdxList = new ArrayList<>();
+    int[] freq = new int[26];
+    Set<Integer> chars = new HashSet<>();
+    for (int i = 0; i < p.length(); i++) {
+      freq[p.charAt(i) - 'a']++;
+      chars.add(p.charAt(i) - 'a');
+    }
+    int count = chars.size();
+
+    int start = 0, end = 0;
+    while (end < s.length()) {
+      char ch = s.charAt(end);
+      if (chars.contains(ch - 'a')) {
+        freq[ch - 'a']--;
+        if (freq[ch - 'a'] == 0) {
+          count--;
+        }
+      }
+      while (count == 0) {
+        if (end - start + 1 == p.length()) {
+          startIdxList.add(start);
+        }
+        //shrink the substring
+        char chSt = s.charAt(start);
+        if (chars.contains(chSt - 'a')) {
+          freq[chSt - 'a']++;
+          if (freq[chSt - 'a'] > 0) {
+            count++;
+          }
+        }
+        start++;
+      }
+      end++;
+    }
+    return startIdxList;
+  }
+ // second way of doing the same crap
+  public List<Integer> findAnagrams2(String s, String p) {
+    List<Integer> result = new ArrayList<>();
+    if(p.length() > s.length()) {
+      return result;
+    }
+
+    char[] targetMap = new char[26];
+    for(int i = 0; i < p.length(); i++) {
+      targetMap[p.charAt(i) - 'a']++;
+    }
+    char[] current = new char[26];
+    int k = p.length();
+    int p1 = 0, p2 = 0;
+    while(p2 < s.length()) {
+      current[s.charAt(p2++) - 'a']++;
+
+      if(p2 - p1 == k) {
+        if(areEquals(targetMap, current)) {
+          result.add(p1);
+        }
+        current[s.charAt(p1++) - 'a']--;
+      }
+    }
+    if(areEquals(targetMap, current)) {
+      result.add(p1);
+    }
+    return result;
+  }
+
+  private boolean areEquals(char[] a1, char[] a2) {
+    for(int i = 0; i < 26; i++) {
+      if(a1[i] != a2[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
