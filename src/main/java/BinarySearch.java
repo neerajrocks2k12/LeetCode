@@ -1,7 +1,7 @@
 import java.awt.Point;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BinarySearch {
 //  532. K-diff Pairs in an Array

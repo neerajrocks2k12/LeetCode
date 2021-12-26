@@ -1,4 +1,9 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SlidingWindowProblems {
 
@@ -157,42 +162,81 @@ public class SlidingWindowProblems {
     }
     return startIdxList;
   }
- // second way of doing the same crap
+
+  // second way of doing the same crap
   public List<Integer> findAnagrams2(String s, String p) {
     List<Integer> result = new ArrayList<>();
-    if(p.length() > s.length()) {
+    if (p.length() > s.length()) {
       return result;
     }
 
     char[] targetMap = new char[26];
-    for(int i = 0; i < p.length(); i++) {
+    for (int i = 0; i < p.length(); i++) {
       targetMap[p.charAt(i) - 'a']++;
     }
     char[] current = new char[26];
     int k = p.length();
     int p1 = 0, p2 = 0;
-    while(p2 < s.length()) {
+    while (p2 < s.length()) {
       current[s.charAt(p2++) - 'a']++;
 
-      if(p2 - p1 == k) {
-        if(areEquals(targetMap, current)) {
+      if (p2 - p1 == k) {
+        if (areEquals(targetMap, current)) {
           result.add(p1);
         }
         current[s.charAt(p1++) - 'a']--;
       }
     }
-    if(areEquals(targetMap, current)) {
+    if (areEquals(targetMap, current)) {
       result.add(p1);
     }
     return result;
   }
 
   private boolean areEquals(char[] a1, char[] a2) {
-    for(int i = 0; i < 26; i++) {
-      if(a1[i] != a2[i]) {
+    for (int i = 0; i < 26; i++) {
+      if (a1[i] != a2[i]) {
         return false;
       }
     }
     return true;
+  }
+
+  //  1208. Get Equal Substrings Within Budget
+  public int equalSubstring(String s, String t, int maxCost) {
+    int[] diff = new int[s.length()];
+    for (int i = 0; i < s.length(); i++) {
+      diff[i] = Math.abs(s.charAt(i) - t.charAt(i));
+    }
+    int start = 0, end = 0;
+    int maxLength = 0;
+    int sum = 0;
+    while (end < diff.length) {
+      sum += diff[end];
+      while (sum > maxCost) {
+        sum -= diff[start++];
+      }
+      maxLength = Math.max(maxLength, end - start + 1);
+      end++;
+    }
+
+    return maxLength;
+  }
+  // another solution without extra space
+  public int equalSubstringWithoutSpace(String s, String t, int maxCost) {
+    int start = 0, end = 0;
+    int maxLength = 0;
+    int sum = 0;
+    while(end < s.length()) {
+      sum += (Math.abs(s.charAt(end) - t.charAt(end)));
+      while(sum > maxCost) {
+        sum -= (Math.abs(s.charAt(start) - t.charAt(start)));
+        start++;
+      }
+      maxLength = Math.max(maxLength, end - start + 1);
+      end++;
+    }
+
+    return maxLength;
   }
 }
