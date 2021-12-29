@@ -1,4 +1,9 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SlidingWindowProblems {
 
@@ -157,42 +162,155 @@ public class SlidingWindowProblems {
     }
     return startIdxList;
   }
- // second way of doing the same crap
+
+  // second way of doing the same crap
   public List<Integer> findAnagrams2(String s, String p) {
     List<Integer> result = new ArrayList<>();
-    if(p.length() > s.length()) {
+    if (p.length() > s.length()) {
       return result;
     }
 
     char[] targetMap = new char[26];
-    for(int i = 0; i < p.length(); i++) {
+    for (int i = 0; i < p.length(); i++) {
       targetMap[p.charAt(i) - 'a']++;
     }
     char[] current = new char[26];
     int k = p.length();
     int p1 = 0, p2 = 0;
-    while(p2 < s.length()) {
+    while (p2 < s.length()) {
       current[s.charAt(p2++) - 'a']++;
 
-      if(p2 - p1 == k) {
-        if(areEquals(targetMap, current)) {
+      if (p2 - p1 == k) {
+        if (areEquals(targetMap, current)) {
           result.add(p1);
         }
         current[s.charAt(p1++) - 'a']--;
       }
     }
-    if(areEquals(targetMap, current)) {
+    if (areEquals(targetMap, current)) {
       result.add(p1);
     }
     return result;
   }
 
   private boolean areEquals(char[] a1, char[] a2) {
-    for(int i = 0; i < 26; i++) {
-      if(a1[i] != a2[i]) {
+    for (int i = 0; i < 26; i++) {
+      if (a1[i] != a2[i]) {
         return false;
       }
     }
     return true;
   }
+
+  //  1208. Get Equal Substrings Within Budget
+  public int equalSubstring(String s, String t, int maxCost) {
+    int[] diff = new int[s.length()];
+    for (int i = 0; i < s.length(); i++) {
+      diff[i] = Math.abs(s.charAt(i) - t.charAt(i));
+    }
+    int start = 0, end = 0;
+    int maxLength = 0;
+    int sum = 0;
+    while (end < diff.length) {
+      sum += diff[end];
+      while (sum > maxCost) {
+        sum -= diff[start++];
+      }
+      maxLength = Math.max(maxLength, end - start + 1);
+      end++;
+    }
+
+    return maxLength;
+  }
+
+  // another solution without extra space
+  public int equalSubstringWithoutSpace(String s, String t, int maxCost) {
+    int start = 0, end = 0;
+    int maxLength = 0;
+    int sum = 0;
+    while (end < s.length()) {
+      sum += (Math.abs(s.charAt(end) - t.charAt(end)));
+      while (sum > maxCost) {
+        sum -= (Math.abs(s.charAt(start) - t.charAt(start)));
+        start++;
+      }
+      maxLength = Math.max(maxLength, end - start + 1);
+      end++;
+    }
+
+    return maxLength;
+  }
+
+  //424. Longest Repeating Character Replacement
+  public int characterReplacement(String s, int k) {
+    char[] chars = s.toCharArray();
+    int[] freq = new int[26]; //because only uppercase letters are possible
+    int maxFreq = 0, currentLen, start = 0, end = 0, maxLength = 0;
+    while (end < chars.length) {
+      freq[chars[end] - 'A']++;
+      maxFreq = Math.max(maxFreq, freq[chars[end] - 'A']);
+      currentLen = end - start + 1;
+      if (currentLen - maxFreq
+          > k) {//meaning we have more extra characters than we can replace. then we need to shrink the substring
+        freq[chars[start] - 'A']--;
+        start++;
+      }
+      maxLength = Math.max(maxLength, end - start + 1);
+      end++;
+    }
+
+    return maxLength;
+  }
+
+  //  1695. Maximum Erasure Value
+  public int maximumUniqueSubarray(int[] nums) {
+    Set<Integer> uniqueNums = new HashSet<>();
+    int start = 0, end = 0;
+    int maxSum = 0;
+    int currentSum = 0;
+    while (start < nums.length && end < nums.length) {
+      if (!uniqueNums.contains(nums[end])) {
+        currentSum += nums[end];
+        maxSum = Math.max(maxSum, currentSum);
+        uniqueNums.add(nums[end]);
+        end++;
+      } else {
+        currentSum -= nums[start];
+        uniqueNums.remove(nums[start++]);
+      }
+    }
+
+    return maxSum;
+  }
+
+  /**
+   * the key thing is that to check if all elements in current window are unique we simply check if
+   * map.size() == windowSize
+   */
+  //  1695. Maximum Erasure Value (using hashmap)
+  public int maximumUniqueSubarray2(int[] nums) {
+    Map<Integer, Integer> t = new HashMap<>();
+    int runningSum = 0, start = 0, end = 0;
+    int maxSum = 0;
+    while (end < nums.length) {
+      runningSum += nums[end];
+      t.put(nums[end], 1 + t.getOrDefault(nums[end], 0));
+      while (t.size() < end - start + 1) {
+        runningSum -= nums[start];
+        if (t.containsKey(nums[start])) {
+          t.put(nums[start], t.get(nums[start]) - 1);
+          if (t.get(nums[start]) == 0) {
+            t.remove(nums[start]);
+          }
+        }
+        start++;
+      }
+      if (t.size() == end - start + 1) {
+        maxSum = Math.max(maxSum, runningSum);
+      }
+      end++;
+    }
+    return maxSum;
+  }
 }
+
