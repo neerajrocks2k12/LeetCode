@@ -312,5 +312,43 @@ public class SlidingWindowProblems {
     }
     return maxSum;
   }
+
+  //  930. Binary Subarrays With Sum
+  //  prefix sum approach
+  public int numSubarraysWithSum(int[] nums, int goal) {
+    Map<Integer, Integer> t = new HashMap<>();
+    t.put(0, 1);
+    int runningSum = 0, count = 0;
+    for (int num : nums) {
+      runningSum += num;
+      int key = runningSum - goal;
+      if (t.containsKey(key)) {
+        count += t.get(key);
+      }
+      t.put(runningSum, 1 + t.getOrDefault(runningSum, 0));
+    }
+
+    return count;
+  }
+
+  //difference approach
+  public int numSubarraysWithSum2(int[] nums, int goal) {
+    return atMost(nums, goal) - atMost(nums, goal - 1);
+  }
+
+  private int atMost(int[] nums, int k) {
+    int sum = 0;
+    int cunt = 0;
+    int start = 0, end = 0;
+    while (end < nums.length) {
+      sum += nums[end];
+      while (start <= end && sum > k) {
+        sum -= nums[start++];
+      }
+      cunt += (end - start + 1);
+      end++;
+    }
+    return cunt;
+  }
 }
 
