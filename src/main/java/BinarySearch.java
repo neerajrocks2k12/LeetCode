@@ -74,4 +74,40 @@ public class BinarySearch {
     }
     return start == arr.size() ? -1 : start;
   }
+
+  //  33. Search in Rotated Sorted Array
+  /*
+  Input: nums = [4,5,6,7,0,1,2], target = 0
+  Output: 4
+   */
+  public int search(int[] nums, int target) {
+    int start = 0, end = nums.length;
+    while(start < end) {
+      int mid = start + (end - start) / 2;
+      if(nums[mid] == target) {
+        return mid; // target found so return the index
+      }
+      // to find where which half we need to search, we need to figure out which portion of the
+      // array is correctly ordered, that is for that segment, the A0 <= Aend
+      // first let's check if segment from start to mid is correctly sorted or not
+      if(nums[start] <= nums[mid]) {
+        if(nums[start] <= target && target < nums[mid]) {
+          end = mid;
+        } else {
+          start = mid + 1;
+        }
+      }
+
+      // otherwise, we check if later half is correctly sorted or not
+      if(nums[mid] <= nums[end - 1]) {
+        if(nums[mid] < target && target <= nums[end - 1]) {
+          start = mid + 1;
+        } else {
+          end = mid;
+        }
+      }
+    }
+
+    return -1; // default ans if target doesn't exist in nums
+  }
 }
