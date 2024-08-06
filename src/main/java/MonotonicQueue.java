@@ -19,8 +19,8 @@ public class MonotonicQueue {
    * (kicker) is the <b> nearest smaller element to the right </b> for 5 (being kicked out) and the
    * element left in the queue end before kicker is pushed is the <b> nearest smaller element to the
    * left </b> for the kicker. for 2 we have empty queue meaning there is no smaller element to its
-   * right. Thus, monotonic increasing queue helps us in computing <b>nearest greater to the right
-   * (kicking out step) and nearest greater to the left (pushing in step)</b>
+   * left. Thus, monotonic increasing queue helps us in computing <b>nearest smaller to the right
+   * (kicking out step) and nearest smaller to the left (pushing in step)</b>
    * <p>
    * Another important thing that increasing queue can tell is at any point of time we can find the
    * smallest element in the array (sub-array) by simply seeing the front of the increasing queue
